@@ -1,0 +1,38 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# atorusprez
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+Generate presentations with Atorus Research styling, beginning with 'PowerPoint' but eventually expanding to 'reveal.js'.
+
+## Installation
+
+You can install the development version of atorusprez from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("jonthegeek/atorusprez")
+```
+
+## Usage
+
+Add usage information and examples here.
+
+## Code of Conduct
+
+Please note that the atorusprez project is released with a [Contributor Code of Conduct](https://jonthegeek.github.io/atorusprez/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
