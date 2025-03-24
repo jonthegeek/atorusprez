@@ -23,8 +23,8 @@ You can install the development version of atorusprez from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("remotes")
-remotes::install_github("jonthegeek/atorusprez")
+# install.packages("pak")
+pak::pak("jonthegeek/atorusprez")
 ```
 
 ## Usage
