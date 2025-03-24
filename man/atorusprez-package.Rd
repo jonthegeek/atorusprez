@@ -25,4 +25,5 @@ Other contributors:
   \item Atorus Research [copyright holder, funder]
 }
 
+}
 \keyword{internal}
