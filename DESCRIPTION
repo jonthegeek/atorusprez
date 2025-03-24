@@ -1,9 +1,11 @@
 Package: atorusprez
 Title: Presentations with Atorus Style
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R: c(
     person("Jon", "Harmon", , "jon.harmon@atorusresearch.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0003-4781-4346"))
+           comment = c(ORCID = "0000-0003-4781-4346")),
+    person("Atorus Research", role = c("cph", "fnd"))
+  )
 Description: Generate presentations with Atorus Research styling,
     beginning with 'PowerPoint' but eventually expanding to 'reveal.js'.
 License: MIT + file LICENSE

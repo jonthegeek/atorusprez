@@ -20,5 +20,9 @@ Useful links:
 \author{
 \strong{Maintainer}: Jon Harmon \email{jon.harmon@atorusresearch.com} (\href{https://orcid.org/0000-0003-4781-4346}{ORCID})
 
+Other contributors:
+\itemize{
+  \item Atorus Research [copyright holder, funder]
 }
+
 \keyword{internal}
