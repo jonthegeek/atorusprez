@@ -1,0 +1,405 @@
+---
+title: |
+  [Clinify: Clinical Table<br>Styling Tools and Utilities]{style="color:white;"}
+subtitle: |
+  [Mike Stackhouse, Atorus Research<br>OS-21]{style="color:#86CAC6;"}
+title-slide-attributes:
+    data-background-image: "images/image3.jpeg"
+format:
+  revealjs:
+    center-title-slide: false
+    reference-doc: "template.potx"
+    theme: [default, styles.scss]
+    width: 1280
+    height: 720
+    auto-animate-easing: ease-in-out
+    auto-animate-unmatched: false
+    auto-animate-duration: 0.8
+---
+
+## Motivation {background-image="images/standard_slide.png"} 
+
+::: {.fragment .fade-up}
+- Organizations have standards
+    - Changing might not be an option
+    - You probably have to deviate, with high amounts of nuance
+:::
+::: {.fragment .fade-up}
+- CROs may have to work with many different standards
+:::
+::: {.fragment .fade-up}
+- Reuse and repeatability of configurations is still critical
+    - Changing those configurations needs to be easy
+:::
+
+## Some History {background-image="images/standard_slide.png" .smaller} 
+
+::: {.fragment .fade-up}
+- Created {pharmaRTF} in 2020
+  - Extended {huxtable} to make RTF tables fit for clinical reports
+:::
+
+::: {.fragment .fade-up}
+- {pharmaRTF} Did a Few Things Well
+    - Extend, not replace
+    - Build the table, then build the document
+    - Keep things simple for the user
+:::
+
+::: {.fragment .fade-up}
+- Also lacked a lot of capabilities
+    - Specific placement of column headers
+    - Alternating pages
+    - More extensive formatting capabilities
+:::
+
+## Introducing **{clinify}** {background-image="images/standard_slide.png"} 
+
+::: {.fragment .fade-up}
+- Built on top of {flextable} and {officer}
+:::
+::: {.fragment .fade-up}
+- Chose these packages because:
+  - Offers most of the functionality we already want
+  - Treat docx files as a first class output
+  - With {officer}, can also highly customize the document and not just the table
+:::
+
+## Design Philosophy  {background-image="images/standard_slide.png"} 
+
+::: {.fragment .fade-up}
+- **{clinify}** objects should inherit from an underlying {flextable} or {officer} object
+:::
+::: {.fragment .fade-up}
+- **{clinify}** functionality must not interfere with {flextable} or {officer} functionality, i.e. {flextable} or {officer} functions called should operate without error
+:::
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+```r
+library(clinify)
+# Create a clintable
+ct <- clintable(mtcars)
+ct
+```
+
+![](./images/clinify1.png)
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+```{.r code-line-numbers="2-6"}
+ct <- clintable(mtcars) |>
+  clin_add_titles(
+    list(
+      c("Left", "Center", "Right"),
+      c("Just the middle")
+    )
+  ) |>
+  clin_add_footnotes(
+    list(
+      c(
+        "Here's a footnote.", 
+        format(Sys.time(), "%H:%M %A, %B %d, %Y")
+      )
+    )
+  )
+```
+
+## {.center auto-animate=true background-image="images/standard_slide.png" code-line-numbers="7-14"}
+
+```{.r code-line-numbers="7-14"}
+ct <- clintable(mtcars) |>
+  clin_add_titles(
+    list(
+      c("Left", "Center", "Right"),
+      c("Just the middle")
+    )
+  ) |>
+  clin_add_footnotes(
+    list(
+      c(
+        "Here's a footnote.", 
+        format(Sys.time(), "%H:%M %A, %B %d, %Y")
+      )
+    )
+  )
+```
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+![](./images/clinify2.png)
+
+## Page-by, Group-by, Alternating Pages {.smaller auto-animate=true background-image="images/standard_slide.png"}
+
+::: {.fragment .fade-up}
+- Page by
+  - Use a data variable to force page breaks
+  - Can also use maximum rows allowed on a page
+:::
+
+::: {.fragment .fade-up}
+- Group by
+  - Pull a variable (or variables) above the column headers
+  - Break between groups
+:::
+
+::: {.fragment .fade-up}
+- Alternating pages
+  - Allow overflow of columns to multiple pages
+  - Allow key variables that appear on each page
+:::
+
+## Prep Some Data... {.center .smaller auto-animate=true background-image="images/standard_slide.png"}
+
+```r
+dat <- mtcars
+# Make a page by variable
+dat['page'] <- c(
+  rep(1, 10),
+  rep(2, 10),
+  rep(3, 10),
+  c(4, 4)
+)
+# Make some group variables
+dat2 <- rbind(dat, dat)
+dat2['groups1'] <- c(
+  rep('a', 32),
+  rep('b', 32)
+)
+dat2['groups2'] <- c(
+  rep('1', 16),
+  rep('2', 16),
+  rep('1', 16),
+  rep('2', 16)
+)
+```
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+```{.r code-line-numbers="2"}
+ct <- clintable(dat2) |> 
+  clin_page_by('page') |> 
+  clin_group_by(c('groups1', 'groups2')) |> 
+  clin_alt_pages(
+    key_cols = c('mpg', 'cyl', 'hp'),
+    col_groups = list(
+      c('disp', 'drat', 'wt'),
+      c('qsec', 'vs', 'am'),
+      c('gear', 'carb')
+    ) 
+  )
+ct
+```
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+```{.r code-line-numbers="3"}
+ct <- clintable(dat2) |> 
+  clin_page_by('page') |> 
+  clin_group_by(c('groups1', 'groups2')) |> 
+  clin_alt_pages(
+    key_cols = c('mpg', 'cyl', 'hp'),
+    col_groups = list(
+      c('disp', 'drat', 'wt'),
+      c('qsec', 'vs', 'am'),
+      c('gear', 'carb')
+    ) 
+  )
+ct
+```
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+```{.r code-line-numbers="4-11"}
+ct <- clintable(dat2) |> 
+  clin_page_by('page') |> 
+  clin_group_by(c('groups1', 'groups2')) |> 
+  clin_alt_pages(
+    key_cols = c('mpg', 'cyl', 'hp'),
+    col_groups = list(
+      c('disp', 'drat', 'wt'),
+      c('qsec', 'vs', 'am'),
+      c('gear', 'carb')
+    ) 
+  )
+ct
+```
+## {auto-animate=true background-image="images/standard_slide.png"}
+
+![](./images/clinify3.gif)
+
+## Column Widths {auto-animate=true background-image="images/standard_slide.png"}
+
+::: {.fragment .fade-up}
+- Assignment based on percentage width
+:::
+
+::: {.fragment .fade-up}
+- Width automatically set based on assigned defaults
+:::
+
+::: {.fragment .fade-up}
+- Alternating pages respect key column widths
+  - Proportional to respective page
+:::
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+```{.r code-line-numbers="4-12"}
+ct <- clintable(dat2) |> 
+  clin_page_by('page') |> 
+  clin_group_by(c('groups1', 'groups2')) |> 
+  clin_alt_pages(
+    key_cols = c('mpg', 'cyl', 'hp'),
+    col_groups = list(
+      c('disp', 'drat', 'wt'),
+      c('qsec', 'vs', 'am'),
+      c('gear', 'carb')
+    ) 
+  ) |>
+  clin_col_widths(mpg = .2, cyl=.2, disp=.15, vs=.15)
+ct
+```
+
+## {auto-animate=true background-image="images/standard_slide.png"}
+
+![](./images/clinify4.gif)
+
+## Column Headers {auto-animate=true background-image="images/standard_slide.png"}
+
+::: {.fragment .fade-up}
+- Simplify ability to assign custom column headers
+:::
+
+::: {.fragment .fade-up}
+- Allow for spanning headers
+  - Allow levels of nesting
+:::
+
+::: {.fragment .fade-up}
+- Take header from labels if available
+:::
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+```{.r code-line-numbers="3-8"}
+library(flextable)
+ct <- clintable(iris) |>
+  clin_column_headers(
+    Sepal.Length = c("Flowers", "Sepal", "Length"),  
+    Sepal.Width = c("Flowers", "Sepal", "Width"),  
+    Petal.Length = c("Petal", "Length"),  
+    Petal.Width = c("Petal", "Width")
+  ) |>
+  align(align='center', part='header') |>
+  align(align='center', part='body')
+ct
+```
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+```{.r code-line-numbers="9-10"}
+library(flextable)
+ct <- clintable(iris) |>
+  clin_column_headers(
+    Sepal.Length = c("Flowers", "Sepal", "Length"),  
+    Sepal.Width = c("Flowers", "Sepal", "Width"),  
+    Petal.Length = c("Petal", "Length"),  
+    Petal.Width = c("Petal", "Width")
+  ) |>
+  align(align='center', part='header') |>
+  align(align='center', part='body')
+ct
+```
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+![](./images/clinify5.png){fig-align="center"}
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+```{.r code-line-numbers="2-5"}
+dat <- iris
+attr(refdat$Sepal.Length, 'label') <- "Flower||Sepal||Length"
+attr(refdat$Sepal.Width, 'label') <- "Flower||Sepal||Width"
+attr(refdat$Petal.Length, 'label') <- "Flower||Petal||Length"
+attr(refdat$Petal.Width, 'label') <- "Flower||Petal||Width"
+
+ct <- clintable(dat)|>
+  align(align='center', part='header') |>
+  align(align='center', part='body')
+ct
+```
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+![](./images/clinify5.png){fig-align="center"}
+
+## Understanding Defaults {.smaller auto-animate=true background-image="images/standard_slide.png"}
+
+- Default styles are applied to `clintable()` objects automatically when printing
+- Stored in options, and customizable:
+  - `clinify_docx_default`: Default docx properties assigned to output document
+    - Also controls page width based on margins
+  - `clinify_titles_default`: Default title styles (within document header)
+  - `clinify_footnotes_default`: Default footnote styles (within document footer)
+  - `clinify_table_default`: Default table body styles
+
+## Tying it All Together {.center auto-animate=true background-image="images/standard_slide.png"}
+
+```{.r}
+# Create a basic table
+ct <- clintable(dat2) |> 
+  clin_page_by('page') |> 
+  clin_group_by(c('groups1', 'groups2')) |> 
+  clin_alt_pages(
+    key_cols = c('mpg', 'cyl', 'hp'),
+    col_groups = list(
+      c('disp', 'drat', 'wt'),
+      c('qsec', 'vs', 'am'),
+      c('gear', 'carb')
+    ) 
+  ) |>
+  clin_col_widths(mpg = .2, cyl=.2, disp=.15, vs=.15) |>
+  clin_add_titles(
+    list(
+      c("Left", "Center", "Right"),
+      c("Just the middle")
+    )
+  ) |> 
+  clin_add_footnotes(
+      list(
+        c(
+          "Here's a footnote.", 
+          format(Sys.time(), "%H:%M %A, %B %d, %Y")
+        )
+      )
+    )
+
+ct
+write_clintable(ct, file="example_table.docx")
+```
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+![](./images/clinify7.gif){fig-align="center"}
+
+## {.center auto-animate=true background-image="images/standard_slide.png"}
+
+![](./images/clinify8.gif){fig-align="center"}
+
+## Key Ideas {.center auto-animate=true background-image="images/standard_slide.png"}
+
+::: {.fragment .fade-up}
+- **{clinify}** works as an extension of the {flextable} and {officer} packages to help with clinical reporting
+:::
+
+::: {.fragment .fade-up}
+- It focuses on additional required features and streamlines less straightforward pieces
+:::
+
+::: {.fragment .fade-up}
+- Intent is not to be redundant with other packages in the pharmaverse
+  - Packages like {rtables} or {gtsummary} can already output to {flextable} objects
+:::
