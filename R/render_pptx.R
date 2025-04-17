@@ -13,14 +13,16 @@
 #' @param quiet Whether to suppress output during the rendering process. Passed
 #'   on to [quarto::quarto_render()].
 #'
-#' @returns `NULL` invisibly (this function is called to generate the pptx as a
-#'   side effect).
+#' @returns The path to the resulting `pptx` file, invisibly (this function is
+#'   called to generate the `pptx` as a side effect).
 #' @export
 render_pptx <- function(path, date = Sys.Date(), quiet = TRUE, ...) {
   dots <- rlang::list2(...)
   dots$metadata <- .reconcile_metadata(dots$metadata, date)
   dots$output_format <- NULL
   dots$input <- NULL
+  output_file <- dots$output_file %||% fs::path_ext_set(basename(path), "pptx")
+  pptx_path <- fs::path(fs::path_dir(path), output_file)
   rlang::inject({
     quarto::quarto_render(
       path,
@@ -29,16 +31,20 @@ render_pptx <- function(path, date = Sys.Date(), quiet = TRUE, ...) {
       !!!dots
     )
   })
+  return(.postprocess_pptx(pptx_path))
 }
 
 .reconcile_metadata <- function(metadata, date) {
   metadata <- c(
     list(
       `reference-doc` = system.file("template.pptx", package = "atorusprez"),
-      `date-format` = "long"
+      `date-format` = "long",
+      date = date
     ),
-    list(date = date),
-    metadata
+    metadata,
+    list(
+      incremental = TRUE
+    )
   )
   metadata <- metadata[lengths(metadata) > 0]
   metadata <- metadata[unique(names(metadata))]

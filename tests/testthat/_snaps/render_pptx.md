@@ -3,5 +3,5 @@
     Code
       get_clean_pptx_hash(pptx_path)
     Output
-      [1] "b8ffe82fe388093714f4115b15b8c381"
+      [1] "6f1024e42f4adcaf24047fdfb727a7d9"
 

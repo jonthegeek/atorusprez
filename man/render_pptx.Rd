@@ -57,8 +57,8 @@ the default globally.}
   }}
 }
 \value{
-\code{NULL} invisibly (this function is called to generate the pptx as a
-side effect).
+The path to the resulting \code{pptx} file, invisibly (this function is
+called to generate the \code{pptx} as a side effect).
 }
 \description{
 Render a qmd as pptx, applying the Atorus theme.
