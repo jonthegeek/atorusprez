@@ -66,7 +66,7 @@
 .replace_layout <- function(rel_path,
                             original_layout_filename,
                             code_layout_filename) {
-  readLines(rel_path) |>
+  readLines(rel_path, warn = FALSE) |>
     stringr::str_replace(original_layout_filename, code_layout_filename) |>
     writeLines(rel_path)
 }
